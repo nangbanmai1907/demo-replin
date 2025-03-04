@@ -36,12 +36,16 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
   const prayerType = form.watch("prayerType");
 
   const mutation = useMutation({
-    mutationFn: async (data: typeof form.getValues) => {
-      return apiRequest("POST", "/api/prayers", data);
+    mutationFn: async () => {
+      // Send all saved prayers to server
+      for (const prayer of savedLocally) {
+        await apiRequest("POST", "/api/prayers", prayer);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/prayers"] });
-      toast({ title: "Đã lưu thông tin thành công" });
+      toast({ title: "Đã lưu tất cả thông tin thành công" });
+      setSavedLocally([]); // Clear the list after successful upload
       form.reset(defaultPrayer);
       onSuccess?.();
     },
@@ -56,24 +60,53 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
 
   const saveLocally = () => {
     const values = form.getValues();
+    if (!values.fullName) {
+      toast({ 
+        title: "Lỗi",
+        description: "Vui lòng nhập họ tên",
+        variant: "destructive"
+      });
+      return;
+    }
+    setSavedLocally(prev => [...prev, { ...values, id: prev.length + 1 }]);
+    toast({ title: "Đã lưu vào danh sách" });
+  };
+
+  const addNewForm = () => {
+    const values = form.getValues();
+    if (!values.fullName) {
+      toast({ 
+        title: "Lỗi",
+        description: "Vui lòng nhập họ tên trước khi tạo mới",
+        variant: "destructive"
+      });
+      return;
+    }
     setSavedLocally(prev => [...prev, { ...values, id: prev.length + 1 }]);
     form.reset(defaultPrayer);
-    toast({ title: "Đã lưu vào danh sách tạm thời" });
+    toast({ title: "Đã thêm vào danh sách và tạo mới" });
   };
 
   const clearLocalList = () => {
     setSavedLocally([]);
-    toast({ title: "Đã xóa danh sách tạm thời" });
-  };
-
-  const addNewForm = () => {
-    form.reset(defaultPrayer);
+    toast({ title: "Đã xóa danh sách" });
   };
 
   return (
     <div className="space-y-8">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-4">
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          if (savedLocally.length === 0) {
+            toast({ 
+              title: "Lỗi",
+              description: "Danh sách đang trống",
+              variant: "destructive"
+            });
+            return;
+          }
+          mutation.mutate();
+        }} className="space-y-4">
           <FormField
             control={form.control}
             name="fullName"
@@ -200,7 +233,7 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
       {savedLocally.length > 0 && (
         <div className="mt-8 border rounded-lg p-6 bg-card">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-lg">Danh sách đã lưu tạm ({savedLocally.length})</h3>
+            <h3 className="font-semibold text-lg">Danh sách đã lưu ({savedLocally.length})</h3>
             <Button variant="destructive" size="sm" onClick={clearLocalList}>
               <Trash2 className="h-4 w-4 mr-2" />
               Xóa danh sách
