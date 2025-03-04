@@ -50,7 +50,7 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
       onSuccess?.();
     },
     onError: () => {
-      toast({ 
+      toast({
         title: "Lỗi",
         description: "Không thể lưu thông tin",
         variant: "destructive"
@@ -61,7 +61,7 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
   const saveLocally = () => {
     const values = form.getValues();
     if (!values.fullName) {
-      toast({ 
+      toast({
         title: "Lỗi",
         description: "Vui lòng nhập họ tên",
         variant: "destructive"
@@ -75,7 +75,7 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
   const addNewForm = () => {
     const values = form.getValues();
     if (!values.fullName) {
-      toast({ 
+      toast({
         title: "Lỗi",
         description: "Vui lòng nhập họ tên trước khi tạo mới",
         variant: "destructive"
@@ -98,7 +98,7 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
         <form onSubmit={(e) => {
           e.preventDefault();
           if (savedLocally.length === 0) {
-            toast({ 
+            toast({
               title: "Lỗi",
               description: "Danh sách đang trống",
               variant: "destructive"
@@ -150,9 +150,9 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
               <FormItem>
                 <FormLabel>Năm sinh</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="number" 
-                    {...field} 
+                  <Input
+                    type="number"
+                    {...field}
                     onChange={(e) => field.onChange(parseInt(e.target.value))}
                   />
                 </FormControl>
@@ -186,9 +186,9 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
                   <FormItem>
                     <FormLabel>Năm mất</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        {...field} 
+                      <Input
+                        type="number"
+                        {...field}
                         onChange={(e) => field.onChange(parseInt(e.target.value))}
                       />
                     </FormControl>
@@ -231,39 +231,58 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
       </Form>
 
       {savedLocally.length > 0 && (
-        <div className="mt-8 border rounded-lg p-6 bg-card">
-          <div className="flex justify-between items-center mb-4">
+        <div className="mt-8 space-y-8">
+          <div className="flex justify-between items-center">
             <h3 className="font-semibold text-lg">Danh sách đã lưu ({savedLocally.length})</h3>
             <Button variant="destructive" size="sm" onClick={clearLocalList}>
               <Trash2 className="h-4 w-4 mr-2" />
               Xóa danh sách
             </Button>
           </div>
-          <div className="space-y-4">
-            {savedLocally.map((prayer, index) => (
-              <div key={index} className="p-4 border rounded-lg bg-background">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-medium">{prayer.fullName}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {prayer.prayerType === "alive" ? "Cầu an" : "Cầu siêu"}
-                    </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Danh sách cầu an */}
+            <div className="space-y-4">
+              <h4 className="font-medium text-primary">Danh sách cầu an</h4>
+              {savedLocally
+                .filter(prayer => prayer.prayerType === "alive")
+                .map((prayer, index) => (
+                  <div key={index} className="p-4 border rounded-lg bg-background">
+                    <div className="space-y-2">
+                      <p className="font-medium">{prayer.fullName}</p>
+                      <div className="text-sm text-muted-foreground">
+                        <p>Năm sinh: {prayer.birthYear}</p>
+                        {prayer.address && <p>Địa chỉ: {prayer.address}</p>}
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-sm text-right text-muted-foreground">
-                    <p>Năm sinh: {prayer.birthYear}</p>
-                    {prayer.prayerType === "alive" && prayer.address && (
-                      <p>Địa chỉ: {prayer.address}</p>
-                    )}
-                    {prayer.prayerType === "deceased" && (
-                      <>
+                ))}
+              {savedLocally.filter(prayer => prayer.prayerType === "alive").length === 0 && (
+                <p className="text-sm text-muted-foreground italic">Chưa có thông tin cầu an</p>
+              )}
+            </div>
+
+            {/* Danh sách cầu siêu */}
+            <div className="space-y-4">
+              <h4 className="font-medium text-primary">Danh sách cầu siêu</h4>
+              {savedLocally
+                .filter(prayer => prayer.prayerType === "deceased")
+                .map((prayer, index) => (
+                  <div key={index} className="p-4 border rounded-lg bg-background">
+                    <div className="space-y-2">
+                      <p className="font-medium">{prayer.fullName}</p>
+                      <div className="text-sm text-muted-foreground">
+                        <p>Năm sinh: {prayer.birthYear}</p>
                         <p>Năm mất: {prayer.deathYear}</p>
                         <p>Nơi an táng: {prayer.burialLocation}</p>
-                      </>
-                    )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                ))}
+              {savedLocally.filter(prayer => prayer.prayerType === "deceased").length === 0 && (
+                <p className="text-sm text-muted-foreground italic">Chưa có thông tin cầu siêu</p>
+              )}
+            </div>
           </div>
         </div>
       )}
