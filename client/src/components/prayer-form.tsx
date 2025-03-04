@@ -10,6 +10,14 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Upload, Save } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface PrayerFormProps {
   onSuccess?: () => void;
@@ -249,64 +257,93 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
             {/* Danh sách cầu an */}
             <div className="space-y-4">
               <h4 className="font-medium text-primary">Danh sách cầu an</h4>
-              {savedLocally
-                .filter(prayer => prayer.prayerType === "alive")
-                .map((prayer, index) => (
-                  <div key={index} className="p-4 border rounded-lg bg-background">
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-start">
-                        <p className="font-medium">{prayer.fullName}</p>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeItem(prayer.id)}
-                          className="h-8 w-8 text-destructive hover:text-destructive/90"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        <p>Năm sinh: {prayer.birthYear}</p>
-                        {prayer.address && <p>Địa chỉ: {prayer.address}</p>}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              {savedLocally.filter(prayer => prayer.prayerType === "alive").length === 0 && (
-                <p className="text-sm text-muted-foreground italic">Chưa có thông tin cầu an</p>
-              )}
+              <div className="border rounded-lg">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Họ và tên</TableHead>
+                      <TableHead>Năm sinh</TableHead>
+                      <TableHead>Địa chỉ</TableHead>
+                      <TableHead className="w-[50px]"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {savedLocally
+                      .filter(prayer => prayer.prayerType === "alive")
+                      .map((prayer) => (
+                        <TableRow key={prayer.id}>
+                          <TableCell className="font-medium">{prayer.fullName}</TableCell>
+                          <TableCell>{prayer.birthYear}</TableCell>
+                          <TableCell>{prayer.address}</TableCell>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeItem(prayer.id)}
+                              className="h-8 w-8 text-destructive hover:text-destructive/90"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    {savedLocally.filter(prayer => prayer.prayerType === "alive").length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center text-muted-foreground">
+                          Chưa có thông tin cầu an
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
 
             {/* Danh sách cầu siêu */}
             <div className="space-y-4">
               <h4 className="font-medium text-primary">Danh sách cầu siêu</h4>
-              {savedLocally
-                .filter(prayer => prayer.prayerType === "deceased")
-                .map((prayer, index) => (
-                  <div key={index} className="p-4 border rounded-lg bg-background">
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-start">
-                        <p className="font-medium">{prayer.fullName}</p>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeItem(prayer.id)}
-                          className="h-8 w-8 text-destructive hover:text-destructive/90"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        <p>Năm sinh: {prayer.birthYear}</p>
-                        <p>Năm mất: {prayer.deathYear}</p>
-                        <p>Nơi an táng: {prayer.burialLocation}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              {savedLocally.filter(prayer => prayer.prayerType === "deceased").length === 0 && (
-                <p className="text-sm text-muted-foreground italic">Chưa có thông tin cầu siêu</p>
-              )}
+              <div className="border rounded-lg">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Họ và tên</TableHead>
+                      <TableHead>Năm sinh</TableHead>
+                      <TableHead>Năm mất</TableHead>
+                      <TableHead>Nơi an táng</TableHead>
+                      <TableHead className="w-[50px]"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {savedLocally
+                      .filter(prayer => prayer.prayerType === "deceased")
+                      .map((prayer) => (
+                        <TableRow key={prayer.id}>
+                          <TableCell className="font-medium">{prayer.fullName}</TableCell>
+                          <TableCell>{prayer.birthYear}</TableCell>
+                          <TableCell>{prayer.deathYear}</TableCell>
+                          <TableCell>{prayer.burialLocation}</TableCell>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeItem(prayer.id)}
+                              className="h-8 w-8 text-destructive hover:text-destructive/90"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    {savedLocally.filter(prayer => prayer.prayerType === "deceased").length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center text-muted-foreground">
+                          Chưa có thông tin cầu siêu
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         </div>
