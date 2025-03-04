@@ -92,6 +92,11 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
     toast({ title: "Đã xóa danh sách" });
   };
 
+  const removeItem = (id: number) => {
+    setSavedLocally(prev => prev.filter(item => item.id !== id));
+    toast({ title: "Đã xóa thông tin" });
+  };
+
   return (
     <div className="space-y-8">
       <Form {...form}>
@@ -249,7 +254,17 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
                 .map((prayer, index) => (
                   <div key={index} className="p-4 border rounded-lg bg-background">
                     <div className="space-y-2">
-                      <p className="font-medium">{prayer.fullName}</p>
+                      <div className="flex justify-between items-start">
+                        <p className="font-medium">{prayer.fullName}</p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeItem(prayer.id)}
+                          className="h-8 w-8 text-destructive hover:text-destructive/90"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                       <div className="text-sm text-muted-foreground">
                         <p>Năm sinh: {prayer.birthYear}</p>
                         {prayer.address && <p>Địa chỉ: {prayer.address}</p>}
@@ -270,7 +285,17 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
                 .map((prayer, index) => (
                   <div key={index} className="p-4 border rounded-lg bg-background">
                     <div className="space-y-2">
-                      <p className="font-medium">{prayer.fullName}</p>
+                      <div className="flex justify-between items-start">
+                        <p className="font-medium">{prayer.fullName}</p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeItem(prayer.id)}
+                          className="h-8 w-8 text-destructive hover:text-destructive/90"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                       <div className="text-sm text-muted-foreground">
                         <p>Năm sinh: {prayer.birthYear}</p>
                         <p>Năm mất: {prayer.deathYear}</p>
