@@ -67,34 +67,29 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
     },
   });
 
-  const saveLocally = () => {
-    const values = form.getValues();
-    if (!values.fullName) {
-      toast({
-        title: "Lỗi",
-        description: "Vui lòng nhập họ tên",
-        variant: "destructive"
-      });
-      return;
-    }
-    setSavedLocally(prev => [...prev, { ...values, id: prev.length + 1 }]);
-    toast({ title: "Đã lưu vào danh sách" });
-  };
-
   const addNewForm = () => {
     const values = form.getValues();
     if (!values.fullName) {
       toast({
         title: "Lỗi",
-        description: "Vui lòng nhập họ tên trước khi tạo mới",
+        description: "Vui lòng nhập họ tên trước khi thêm mới",
         variant: "destructive"
       });
       return;
     }
-    setSavedLocally(prev => [...prev, { ...values, id: prev.length + 1 }]);
+    if (editingPrayer) {
+      // Update existing prayer
+      setSavedLocally(prev => prev.map(p => 
+        p.id === editingPrayer.id ? { ...values, id: p.id } : p
+      ));
+      toast({ title: "Đã cập nhật thông tin" });
+    } else {
+      // Add new prayer
+      setSavedLocally(prev => [...prev, { ...values, id: prev.length + 1 }]);
+      toast({ title: "Đã thêm vào danh sách" });
+    }
     form.reset(defaultPrayer);
     setEditingPrayer(null);
-    toast({ title: "Đã thêm vào danh sách và tạo mới" });
   };
 
   const clearLocalList = () => {
@@ -146,7 +141,7 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
             name="prayerType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Loại cầu nguyện</FormLabel>
+                <FormLabel>Chọn Cầu an/Cầu siêu</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
@@ -236,15 +231,11 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
           <div className="flex gap-2 flex-wrap">
             <Button type="button" variant="outline" onClick={addNewForm}>
               <Plus className="h-4 w-4 mr-2" />
-              Tạo mới
-            </Button>
-            <Button type="button" variant="outline" onClick={saveLocally}>
-              <Save className="h-4 w-4 mr-2" />
-              Lưu tạm
+              {editingPrayer ? "Cập nhật" : "Thêm thông tin"}
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
               <Upload className="h-4 w-4 mr-2" />
-              {mutation.isPending ? "Đang lưu..." : "Gửi lên server"}
+              {mutation.isPending ? "Đang gửi..." : "Gửi"}
             </Button>
           </div>
         </form>
@@ -253,7 +244,7 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
       {savedLocally.length > 0 && (
         <div className="mt-8 space-y-8">
           <div className="flex justify-between items-center">
-            <h3 className="font-semibold text-lg">Danh sách đã lưu ({savedLocally.length})</h3>
+            <h3 className="font-semibold text-lg">Danh sách đăng ký ({savedLocally.length})</h3>
             <Button variant="destructive" size="sm" onClick={clearLocalList}>
               <Trash2 className="h-4 w-4 mr-2" />
               Xóa danh sách
