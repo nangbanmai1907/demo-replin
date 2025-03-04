@@ -13,7 +13,7 @@ export default function Home() {
       <div className="container mx-auto py-8 px-4">
         <div className="mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Thông tin cầu nguyện
+            Phiếu điền cầu an, cầu siêu
           </h1>
         </div>
         <div className="max-w-2xl mx-auto">
