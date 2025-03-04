@@ -1,25 +1,25 @@
 import type { Express } from "express";
 import { createServer } from "http";
 import { storage } from "./storage";
-import { insertTaskSchema } from "@shared/schema";
+import { insertPrayerSchema } from "@shared/schema";
 import { ZodError } from "zod";
 
 export async function registerRoutes(app: Express) {
-  app.get("/api/tasks", async (_req, res) => {
-    const tasks = await storage.getTasks();
-    res.json(tasks);
+  app.get("/api/prayers", async (_req, res) => {
+    const prayers = await storage.getPrayers();
+    res.json(prayers);
   });
 
-  app.post("/api/tasks", async (req, res) => {
+  app.post("/api/prayers", async (req, res) => {
     try {
-      const task = insertTaskSchema.parse(req.body);
-      const created = await storage.createTask(task);
+      const prayer = insertPrayerSchema.parse(req.body);
+      const created = await storage.createPrayer(prayer);
       res.json(created);
     } catch (err) {
       if (err instanceof ZodError) {
-        res.status(400).json({ message: "Invalid task data", errors: err.errors });
+        res.status(400).json({ message: "Dữ liệu không hợp lệ", errors: err.errors });
       } else {
-        res.status(500).json({ message: "Failed to create task" });
+        res.status(500).json({ message: "Không thể tạo mới" });
       }
     }
   });

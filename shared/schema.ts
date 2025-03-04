@@ -34,3 +34,30 @@ export const defaultCategories = [
 
 export type InsertTask = z.infer<typeof insertTaskSchema>;
 export type Task = typeof tasks.$inferSelect;
+
+export const prayers = pgTable("prayers", {
+  id: serial("id").primaryKey(),
+  fullName: text("full_name").notNull(),
+  prayerType: text("prayer_type").notNull(), // "alive" for cầu an, "deceased" for cầu siêu
+  birthYear: integer("birth_year").notNull(),
+  address: text("address"),
+  deathYear: integer("death_year"),
+  burialLocation: text("burial_location"),
+});
+
+export const insertPrayerSchema = createInsertSchema(prayers)
+  .omit({ id: true })
+  .refine(
+    (data) => {
+      if (data.prayerType === "deceased") {
+        return !!data.deathYear && !!data.burialLocation;
+      }
+      return true;
+    },
+    {
+      message: "Cầu siêu cần điền năm mất và nơi an táng",
+    }
+  );
+
+export type InsertPrayer = z.infer<typeof insertPrayerSchema>;
+export type Prayer = typeof prayers.$inferSelect;
