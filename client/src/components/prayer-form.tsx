@@ -9,7 +9,7 @@ import { insertPrayerSchema, type Prayer } from "@shared/schema";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Upload, Save } from "lucide-react";
+import { Plus, Trash2, Upload, Save, Pencil } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -35,10 +35,11 @@ const defaultPrayer = {
 export function PrayerForm({ onSuccess }: PrayerFormProps) {
   const { toast } = useToast();
   const [savedLocally, setSavedLocally] = useState<Prayer[]>([]);
+  const [editingPrayer, setEditingPrayer] = useState<Prayer | null>(null);
 
   const form = useForm({
     resolver: zodResolver(insertPrayerSchema),
-    defaultValues: defaultPrayer,
+    defaultValues: editingPrayer || defaultPrayer,
   });
 
   const prayerType = form.watch("prayerType");
@@ -92,6 +93,7 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
     }
     setSavedLocally(prev => [...prev, { ...values, id: prev.length + 1 }]);
     form.reset(defaultPrayer);
+    setEditingPrayer(null);
     toast({ title: "Đã thêm vào danh sách và tạo mới" });
   };
 
@@ -103,6 +105,11 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
   const removeItem = (id: number) => {
     setSavedLocally(prev => prev.filter(item => item.id !== id));
     toast({ title: "Đã xóa thông tin" });
+  };
+
+  const editItem = (prayer: Prayer) => {
+    setEditingPrayer(prayer);
+    form.reset(prayer);
   };
 
   return (
@@ -253,7 +260,7 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="flex flex-col space-y-8">
             {/* Danh sách cầu an */}
             <div className="space-y-4">
               <h4 className="font-medium text-primary">Danh sách cầu an</h4>
@@ -264,7 +271,7 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
                       <TableHead>Họ và tên</TableHead>
                       <TableHead>Năm sinh</TableHead>
                       <TableHead>Địa chỉ</TableHead>
-                      <TableHead className="w-[50px]"></TableHead>
+                      <TableHead className="w-[100px]"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -276,14 +283,24 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
                           <TableCell>{prayer.birthYear}</TableCell>
                           <TableCell>{prayer.address}</TableCell>
                           <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => removeItem(prayer.id)}
-                              className="h-8 w-8 text-destructive hover:text-destructive/90"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <div className="flex space-x-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => editItem(prayer)}
+                                className="h-8 w-8"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeItem(prayer.id)}
+                                className="h-8 w-8 text-destructive hover:text-destructive/90"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -310,7 +327,7 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
                       <TableHead>Năm sinh</TableHead>
                       <TableHead>Năm mất</TableHead>
                       <TableHead>Nơi an táng</TableHead>
-                      <TableHead className="w-[50px]"></TableHead>
+                      <TableHead className="w-[100px]"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -323,14 +340,24 @@ export function PrayerForm({ onSuccess }: PrayerFormProps) {
                           <TableCell>{prayer.deathYear}</TableCell>
                           <TableCell>{prayer.burialLocation}</TableCell>
                           <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => removeItem(prayer.id)}
-                              className="h-8 w-8 text-destructive hover:text-destructive/90"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <div className="flex space-x-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => editItem(prayer)}
+                                className="h-8 w-8"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeItem(prayer.id)}
+                                className="h-8 w-8 text-destructive hover:text-destructive/90"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
